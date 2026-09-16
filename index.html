@@ -1136,12 +1136,16 @@ function initMain(){
   var PANEL_API='https://panel-invitados.vercel.app/api/confirmar';
   var RSVP_URL='https://boda-emilio-y-monica.vercel.app';
   var DEADLINE=new Date(2026,9,10,23,59,59,999); // 10 oct 2026
-  var frozen=Date.now()>DEADLINE.getTime();
+  // Los novios cerraron las confirmaciones antes de la fecha límite (16 sep 2026).
+  // Las invitaciones también están bloqueadas en el panel, así que el API las rechaza.
+  var CERRADAS=true;
+  var frozen=CERRADAS||Date.now()>DEADLINE.getTime();
   if(frozen){
     if(btnYes)btnYes.disabled=true;
     if(btnNo)btnNo.disabled=true;
     if(confirmBtn)confirmBtn.disabled=true;
-    if(rsvpStatus){rsvpStatus.style.display='block';rsvpStatus.style.color='#575e00';rsvpStatus.textContent='El plazo para confirmar cerró el 10 de octubre de 2026.';}
+    if(btnText)btnText.textContent='Confirmaciones cerradas';
+    if(rsvpStatus){rsvpStatus.style.display='block';rsvpStatus.style.color='#575e00';rsvpStatus.textContent=CERRADAS?'Las confirmaciones ya están cerradas. Si tienes alguna duda, comunícate directamente con los novios.':'El plazo para confirmar cerró el 10 de octubre de 2026.';}
   }
 
   // Guard silencioso + prefill: botones bloqueados hasta que responda el panel
@@ -1164,7 +1168,7 @@ function initMain(){
             nombresAsignados.forEach(function(nm,idx){
               asignadosChoices[idx]=(d.estado==='declino')?'no':(confLower.indexOf(nm.toLowerCase().trim())>=0?'yes':'no');
             });
-            if(btnText)btnText.textContent='Actualizar respuesta';
+            if(btnText&&!frozen)btnText.textContent='Actualizar respuesta';
           }
           renderAsignados();
           return;
@@ -1182,7 +1186,7 @@ function initMain(){
             var inputs=fieldsEl.querySelectorAll('input');
             d.nombres_confirmados.forEach(function(nm,i){if(inputs[i])inputs[i].value=nm;});
           }
-          if(btnText)btnText.textContent='Actualizar respuesta';
+          if(btnText&&!frozen)btnText.textContent='Actualizar respuesta';
         }
       })
       .catch(function(){
@@ -1231,6 +1235,7 @@ function initMain(){
       inp.type='text';inp.name='nombre_'+(i+1);
       inp.placeholder='Nombre del invitado '+(i+1);
       inp.autocomplete='name';
+      inp.disabled=frozen;
       div.appendChild(inp);
       fieldsEl.appendChild(div);
     }
