@@ -1139,7 +1139,7 @@ function initMain(){
   // Confirmaciones reabiertas el 18 sep 2026 (los novios las cerraron el 16 y pidieron
   // volver a abrirlas). Poner CERRADAS=true las cierra otra vez; hay que desbloquear/bloquear
   // también las filas en el panel (invitados.bloqueado).
-  var CERRADAS=false;
+  var CERRADAS=true;
   var frozen=CERRADAS||Date.now()>DEADLINE.getTime();
   if(frozen){
     if(btnYes)btnYes.disabled=true;
